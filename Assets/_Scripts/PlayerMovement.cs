@@ -42,6 +42,14 @@ public class PlayerMovement : MonoBehaviour
     private bool _canJump => _jumpBufferCounter > 0f && (_hangTimeCounter > 0f || _extraJumpsValue > 0 /*|| _onWall*/);
     private bool _isJumping;
     
+    [Header("Dash Variables")]
+    [SerializeField] private float _dashSpeed = 15f;
+    [SerializeField] private float _dashLength = .3f;
+    [SerializeField] private float _dashBufferLength = .1f;
+    private float _dashBufferCounter;
+    private bool _isDashing;
+    private bool _hasDashed;
+    private bool _canDash => _dashBufferCounter > 0f && !_hasDashed;
     
     private void Start()
     {
@@ -54,40 +62,47 @@ public class PlayerMovement : MonoBehaviour
         _verticalDirection = GetInput().y;
         if (Input.GetButtonDown("Jump")) _jumpBufferCounter = _jumpBufferLength;
         else _jumpBufferCounter -= Time.deltaTime;
+        if (Input.GetButtonDown("Dash")) _dashBufferCounter = _dashBufferLength;
+        else _dashBufferCounter -= Time.deltaTime;
     }
 
     private void FixedUpdate()
     {
         CheckCollisions();
-
-        if (_canMove) MoveCharacter();
-        else
-            // karakteri yavaşlatarak durdurur (Aniden durmasını engeller)
-
-            _rb.velocity = Vector2.Lerp(_rb.velocity,
-                (new Vector2(_horizontalDirection * _maxMoveSpeed, _rb.velocity.y)), .5f * Time.deltaTime);
-        if (_onGround)
+        // Şart sağlandığında alınan input yönünde dash atar
+        if (_canDash) StartCoroutine(Dash(_horizontalDirection, _verticalDirection));
+        if (!_isDashing)
         {
-            // Yerdeyse yer sürtünmesini etkinleştirir ve zıplama koşullarını ayarlar
+            if (_canMove) MoveCharacter();
+            else
+                // karakteri yavaşlatarak durdurur (Aniden durmasını engeller)
+
+                _rb.velocity = Vector2.Lerp(_rb.velocity,
+                    (new Vector2(_horizontalDirection * _maxMoveSpeed, _rb.velocity.y)), .5f * Time.deltaTime);
+            if (_onGround)
+            {
+                // Yerdeyse yer sürtünmesini etkinleştirir ve zıplama koşullarını ayarlar
             
-            ApplyGroundLinearDrag();
-            _extraJumpsValue = _extraJumps;
-            _hangTimeCounter = _hangTime;
-        }
-        else
-        {
-            // Yerde değilse hava sürtünmesini etkinleştirir ve düşüş çarpanını ayarlar
-            ApplyAirLinearDrag();
-            FallMultiplier();
+                ApplyGroundLinearDrag();
+                _extraJumpsValue = _extraJumps;
+                _hangTimeCounter = _hangTime;
+                _hasDashed = false;
+            }
+            else
+            {
+                // Yerde değilse hava sürtünmesini etkinleştirir ve düşüş çarpanını ayarlar
+                ApplyAirLinearDrag();
+                FallMultiplier();
             
-            // Havada kalma süresini ve zıplama koşulunu kontrol eder
-            _hangTimeCounter -= Time.fixedDeltaTime;
-            if (/*!_onWall ||*/ _rb.velocity.y < 0f /*|| _wallRun*/) _isJumping = false;
-        }
+                // Havada kalma süresini ve zıplama koşulunu kontrol eder
+                _hangTimeCounter -= Time.fixedDeltaTime;
+                if (/*!_onWall ||*/ _rb.velocity.y < 0f /*|| _wallRun*/) _isJumping = false;
+            }
         
-        if (_canJump)
-        {
-            Jump(Vector2.up);
+            if (_canJump)
+            {
+                Jump(Vector2.up);
+            }
         }
 
     }
@@ -170,7 +185,7 @@ public class PlayerMovement : MonoBehaviour
 
     }
     
-    // Zıplama Kontrolü
+    // Zıplama
     private void Jump(Vector2 direction)
     {
         if (!_onGround/* && !_onWall*/)
@@ -182,5 +197,37 @@ public class PlayerMovement : MonoBehaviour
         _hangTimeCounter = 0f;
         _jumpBufferCounter = 0f;
         _isJumping = true;
+    }
+    
+    //Dash atma 
+    IEnumerator Dash(float x, float y)
+    {
+        float dashStartTime = Time.time;
+        _hasDashed = true;
+        _isDashing = true;
+        _isJumping = false;
+
+        _rb.velocity = Vector2.zero;
+        _rb.gravityScale = 0f;
+        _rb.drag = 0f;
+
+        // Hareket ediyorsa o yöne doğru dash atar
+        Vector2 dir;
+        if (x != 0f || y != 0f) dir = new Vector2(x,y);
+        else
+        {
+            //Hareket etmiyorsa yüzü ne tarafa bakıyorsa o yöne dash atar
+            if (_facingRight) dir = new Vector2(1f, 0f);
+            else dir = new Vector2(-1f, 0f);
+        }
+
+        // dashStartTime süresince karakterin hızını input verisi yönünde arttırır
+        while (Time.time < dashStartTime + _dashLength)
+        {
+            _rb.velocity = dir.normalized * _dashSpeed;
+            yield return null;
+        }
+
+        _isDashing = false;
     }
 }

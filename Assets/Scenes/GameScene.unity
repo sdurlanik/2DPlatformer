@@ -1383,6 +1383,9 @@ MonoBehaviour:
   _extraJumps: 1
   _hangTime: 0.1
   _jumpBufferLength: 0.1
+  _dashSpeed: 15
+  _dashLength: 0.2
+  _dashBufferLength: 2
 --- !u!61 &1281296597
 BoxCollider2D:
   m_ObjectHideFlags: 0

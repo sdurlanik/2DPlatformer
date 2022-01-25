@@ -1347,14 +1347,14 @@ Rigidbody2D:
   m_UseFullKinematicContacts: 0
   m_UseAutoMass: 0
   m_Mass: 1
-  m_LinearDrag: 0
+  m_LinearDrag: 2
   m_AngularDrag: 0.05
-  m_GravityScale: 1
-  m_Material: {fileID: 0}
+  m_GravityScale: 7
+  m_Material: {fileID: 6200000, guid: b01f2aa44d16245688928d3204a05c3b, type: 2}
   m_Interpolate: 0
   m_SleepingMode: 1
-  m_CollisionDetection: 0
-  m_Constraints: 0
+  m_CollisionDetection: 1
+  m_Constraints: 4
 --- !u!114 &1281296596
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1369,18 +1369,20 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _movementAcceleration: 75
   _maxMoveSpeed: 5
-  _groundLinearDrag: 2
+  _groundLinearDrag: 20
   _groundRaycastLength: 0.7
   _groundRaycastOffset: {x: 0.53, y: 0, z: 0}
   _groundLayer:
     serializedVersion: 2
     m_Bits: 64
-  _wallLayer:
-    serializedVersion: 2
-    m_Bits: 128
-  _cornerCorrectLayer:
-    serializedVersion: 2
-    m_Bits: 192
+  _jumpForce: 12
+  _airLinearDrag: 5
+  _fallMultiplier: 7
+  _lowJumpFallMultiplier: 5
+  _downMultiplier: 12
+  _extraJumps: 1
+  _hangTime: 0.1
+  _jumpBufferLength: 0.1
 --- !u!61 &1281296597
 BoxCollider2D:
   m_ObjectHideFlags: 0

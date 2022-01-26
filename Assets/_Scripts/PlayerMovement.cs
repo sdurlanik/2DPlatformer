@@ -1,8 +1,6 @@
-using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.PlayerLoop;
 
 public class PlayerMovement : MonoBehaviour
 {   [Header("Components")]
@@ -16,16 +14,22 @@ public class PlayerMovement : MonoBehaviour
     private float _verticalDirection;
     private bool _changingDirection => (_rb.velocity.x > 0f && _horizontalDirection < 0f) || (_rb.velocity.x < 0f && _horizontalDirection > 0f);
     private bool _facingRight = true;
-    private bool _canMove => _test;
-    private bool _test = true;
+    private bool _canMove => !_wallGrab;
     
     [Header("Ground Collision Variables")]
     [SerializeField] private float _groundRaycastLength;
     [SerializeField] private Vector3 _groundRaycastOffset;
     private bool _onGround;
     
+    [Header("Wall Collision Variables")]
+    [SerializeField] private float _wallRaycastLength;
+    private bool _onWall;
+    private bool _onRightWall;
+    
     [Header("Layer Masks")]
     [SerializeField] private LayerMask _groundLayer;
+    [SerializeField] private LayerMask _wallLayer;
+
     
     [Header("Jump Variables")]
     [SerializeField] private float _jumpForce = 12f;
@@ -39,7 +43,7 @@ public class PlayerMovement : MonoBehaviour
     private int _extraJumpsValue;
     private float _hangTimeCounter;
     private float _jumpBufferCounter;
-    private bool _canJump => _jumpBufferCounter > 0f && (_hangTimeCounter > 0f || _extraJumpsValue > 0 /*|| _onWall*/);
+    private bool _canJump => _jumpBufferCounter > 0f && (_hangTimeCounter > 0f || _extraJumpsValue > 0 || _onWall);
     private bool _isJumping;
     
     [Header("Dash Variables")]
@@ -50,6 +54,16 @@ public class PlayerMovement : MonoBehaviour
     private bool _isDashing;
     private bool _hasDashed;
     private bool _canDash => _dashBufferCounter > 0f && !_hasDashed;
+    
+    [Header("Wall Movement Variables")]
+    [SerializeField] private float _wallSlideModifier = 0.5f;
+    [SerializeField] private float _wallRunModifier = 0.85f;
+    [SerializeField] private float _wallJumpXVelocityHaltDelay = 0.2f;
+    private bool _wallGrab => _onWall && !_onGround && Input.GetButton("WallGrab") && !_wallRun;
+    private bool _wallSlide => _onWall && !_onGround && !Input.GetButton("WallGrab") && _rb.velocity.y < 0f && !_wallRun;
+    private bool _wallRun => _onWall && _verticalDirection > 0f;
+    
+    
     
     private void Start()
     {
@@ -96,12 +110,37 @@ public class PlayerMovement : MonoBehaviour
             
                 // Havada kalma süresini ve zıplama koşulunu kontrol eder
                 _hangTimeCounter -= Time.fixedDeltaTime;
-                if (/*!_onWall ||*/ _rb.velocity.y < 0f /*|| _wallRun*/) _isJumping = false;
+                if (!_onWall || _rb.velocity.y < 0f || _wallRun) _isJumping = false;
             }
         
             if (_canJump)
             {
-                Jump(Vector2.up);
+                // Yerde değilse ve duvardaysa
+                if (_onWall && !_onGround)
+                {
+                    // Duvara tutunduğu halde duvara doğru zıplama gerçekleştiğinde
+                    if (!_wallRun && (_onRightWall && _horizontalDirection > 0f || !_onRightWall && _horizontalDirection < 0f))
+                    {
+                        StartCoroutine(NeutralWallJump());
+                    }
+                    else
+                    {
+                        WallJump();
+                    }
+                    Flip();
+                }
+                // Yerdeyse ve duvara değmiyorsa
+                else
+                {
+                    Jump(Vector2.up);
+                }
+            }
+            if (!_isJumping)
+            {
+                if (_wallSlide) WallSlide();
+                if (_wallGrab) WallGrab();
+                if (_wallRun) WallRun();
+                if (_onWall) StickToWall();
             }
         }
 
@@ -175,20 +214,29 @@ public class PlayerMovement : MonoBehaviour
     
     
     // Collision kontrolleri
-    
+
     private void CheckCollisions()
     {
         //Ground Collisions
-        
-        _onGround = Physics2D.Raycast(transform.position + _groundRaycastOffset, Vector2.down, _groundRaycastLength, _groundLayer) ||
-                    Physics2D.Raycast(transform.position - _groundRaycastOffset, Vector2.down, _groundRaycastLength, _groundLayer);
+
+        _onGround = Physics2D.Raycast(transform.position + _groundRaycastOffset, Vector2.down, _groundRaycastLength,
+                        _groundLayer) ||
+                    Physics2D.Raycast(transform.position - _groundRaycastOffset, Vector2.down, _groundRaycastLength,
+                        _groundLayer);
+
+//Wall Collisions
+        _onWall = Physics2D.Raycast(transform.position, Vector2.right, _wallRaycastLength, _wallLayer) ||
+                  Physics2D.Raycast(transform.position, Vector2.left, _wallRaycastLength, _wallLayer);
+        _onRightWall = Physics2D.Raycast(transform.position, Vector2.right, _wallRaycastLength, _wallLayer);
 
     }
-    
+
+    #region Jump
+
     // Zıplama
     private void Jump(Vector2 direction)
     {
-        if (!_onGround/* && !_onWall*/)
+        if (!_onGround && !_onWall)
             _extraJumpsValue--;
 
         ApplyAirLinearDrag();
@@ -199,6 +247,34 @@ public class PlayerMovement : MonoBehaviour
         _isJumping = true;
     }
     
+    // Duvar üzerindeyken zıplama (Duvarın tersi yönünde zıplandığında çalışacak)
+    private void WallJump()
+    {
+        Vector2 jumpDirection = _onRightWall ? Vector2.left : Vector2.right;
+        Jump(Vector2.up + jumpDirection);
+    }
+
+    // Duvarın üzerinde olduğu halde duvara doğru zıplamaya çalıştığında kullanılacak fonksiyon
+    IEnumerator NeutralWallJump()
+    {
+        Vector2 jumpDirection = _onRightWall ? Vector2.left : Vector2.right;
+        Jump(Vector2.up + jumpDirection);
+        yield return new WaitForSeconds(_wallJumpXVelocityHaltDelay);
+        _rb.velocity = new Vector2(0f, _rb.velocity.y);
+    }
+
+    #endregion
+   
+    
+    //Karakterin baktığı yönü tersine çevirir;
+    void Flip()
+    {
+        _facingRight = !_facingRight;
+        transform.Rotate(0f, 180f, 0f);
+    }
+
+    #region Dash
+
     //Dash atma 
     IEnumerator Dash(float x, float y)
     {
@@ -230,4 +306,54 @@ public class PlayerMovement : MonoBehaviour
 
         _isDashing = false;
     }
+
+        #endregion
+    
+   
+
+    #region Wall
+
+    // Duvara tutunma
+    void WallGrab()
+    {
+        _rb.gravityScale = 0f;
+        _rb.velocity = Vector2.zero;
+    }
+
+    // Duvardan kayma
+    void WallSlide()
+    {
+        _rb.velocity = new Vector2(_rb.velocity.x, -_maxMoveSpeed * _wallSlideModifier);
+    }
+
+    // Duvarda koşma 
+    void WallRun()
+    {
+        _rb.velocity = new Vector2(_rb.velocity.x, _verticalDirection * _maxMoveSpeed * _wallRunModifier);
+    }
+
+    // Karakterin yatay hizasını sabit tutar (Duvara yapışık şekilde durmasını sağlar (WallGrab() fonksiyonu duvar üzerinde sabit tutar bu fonksiyon Y hizasına dokunmaz))
+    void StickToWall()
+    {
+        if (_onRightWall && _horizontalDirection >= 0f)
+        {
+            _rb.velocity = new Vector2(1f, _rb.velocity.y);
+        }
+        else if (!_onRightWall && _horizontalDirection <= 0f)
+        {
+            _rb.velocity = new Vector2(-1f, _rb.velocity.y);
+        }
+
+        
+        if (_onRightWall && !_facingRight)
+        {
+            Flip();
+        }
+        else if (!_onRightWall && _facingRight)
+        {
+            Flip();
+        }
+    }
+
+    #endregion
 }

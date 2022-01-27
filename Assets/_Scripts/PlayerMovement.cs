@@ -3,7 +3,10 @@ using System.Collections.Generic;
 using UnityEngine;
 
 public class PlayerMovement : MonoBehaviour
-{   [Header("Components")]
+{
+    #region Variables
+
+    [Header("Components")]
     private Rigidbody2D _rb;
     private Animator _anim;
 
@@ -64,9 +67,11 @@ public class PlayerMovement : MonoBehaviour
     private bool _wallGrab => _onWall && !_onGround && Input.GetButton("WallGrab") && !_wallRun;
     private bool _wallSlide => _onWall && !_onGround && !Input.GetButton("WallGrab") && _rb.velocity.y < 0f && !_wallRun;
     private bool _wallRun => _onWall && _verticalDirection > 0f;
-    
-    
-    
+
+    #endregion
+
+    #region Unity Funcs
+
     private void Start()
     {
         _rb = GetComponent<Rigidbody2D>();
@@ -150,6 +155,10 @@ public class PlayerMovement : MonoBehaviour
 
     }
 
+    #endregion
+    
+    #region Movement
+
     private Vector2 GetInput()
     {
         // Klavye girdilerini alır WASD değerleri -1 ile 1 arasında Vector2 değer döndürür
@@ -167,13 +176,22 @@ public class PlayerMovement : MonoBehaviour
         
         // Karakterin hızını maxMoveSpeed ile sınırlar
         
-       if (Mathf.Abs(_rb.velocity.x) > _maxMoveSpeed)
+        if (Mathf.Abs(_rb.velocity.x) > _maxMoveSpeed)
             _rb.velocity = new Vector2(Mathf.Sign(_rb.velocity.x) * _maxMoveSpeed, _rb.velocity.y);
     }
     
+    //Karakterin baktığı yönü tersine çevirir;
+    void Flip()
+    {
+        _facingRight = !_facingRight;
+        transform.Rotate(0f, 180f, 0f);
+    }
+
+    #endregion
+
+    #region Drag & Gravity
     
     // Zemin sürtünmesini ayarlar
-    
     private void ApplyGroundLinearDrag()
     {
         if (Mathf.Abs(_horizontalDirection) < 0.4f || _changingDirection)
@@ -216,25 +234,28 @@ public class PlayerMovement : MonoBehaviour
         }
     }
     
+    #endregion
     
-    // Collision kontrolleri
+    #region Collisions
 
     private void CheckCollisions()
     {
-        //Ground Collisions
+        var position = transform.position;
 
-        _onGround = Physics2D.Raycast(transform.position + _groundRaycastOffset, Vector2.down, _groundRaycastLength,
+        //Ground Collisions
+        _onGround = Physics2D.Raycast(position + _groundRaycastOffset, Vector2.down, _groundRaycastLength,
                         _groundLayer) ||
-                    Physics2D.Raycast(transform.position - _groundRaycastOffset, Vector2.down, _groundRaycastLength,
+                    Physics2D.Raycast(position - _groundRaycastOffset, Vector2.down, _groundRaycastLength,
                         _groundLayer);
 
-//Wall Collisions
-        _onWall = Physics2D.Raycast(transform.position, Vector2.right, _wallRaycastLength, _wallLayer) ||
-                  Physics2D.Raycast(transform.position, Vector2.left, _wallRaycastLength, _wallLayer);
-        _onRightWall = Physics2D.Raycast(transform.position, Vector2.right, _wallRaycastLength, _wallLayer);
+        //Wall Collisions
+        _onWall = Physics2D.Raycast(position, Vector2.right, _wallRaycastLength, _wallLayer) ||
+                  Physics2D.Raycast(position, Vector2.left, _wallRaycastLength, _wallLayer);
+        _onRightWall = Physics2D.Raycast(position, Vector2.right, _wallRaycastLength, _wallLayer);
 
     }
-
+    #endregion
+    
     #region Jump
 
     // Zıplama
@@ -269,14 +290,6 @@ public class PlayerMovement : MonoBehaviour
 
     #endregion
    
-    
-    //Karakterin baktığı yönü tersine çevirir;
-    void Flip()
-    {
-        _facingRight = !_facingRight;
-        transform.Rotate(0f, 180f, 0f);
-    }
-
     #region Dash
 
     //Dash atma 
@@ -312,9 +325,7 @@ public class PlayerMovement : MonoBehaviour
     }
 
         #endregion
-    
-   
-
+  
     #region Wall
 
     // Duvara tutunma

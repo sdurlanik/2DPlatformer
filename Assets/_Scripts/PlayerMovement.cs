@@ -9,6 +9,8 @@ public class PlayerMovement : MonoBehaviour
     [Header("Components")]
     private Rigidbody2D _rb;
     private Animator _anim;
+    [SerializeField] private ParticleSystem _dustParticle;
+    private ParticleSystem.VelocityOverLifetimeModule velocityModule;
 
     
     [Header("Movement Variables")]
@@ -120,6 +122,7 @@ public class PlayerMovement : MonoBehaviour
                 // Havada kalma süresini ve zıplama koşulunu kontrol eder
                 _hangTimeCounter -= Time.fixedDeltaTime;
                 if (!_onWall || _rb.velocity.y < 0f || _wallRun) _isJumping = false;
+
             }
         
             if (_canJump)
@@ -185,6 +188,12 @@ public class PlayerMovement : MonoBehaviour
     {
         _facingRight = !_facingRight;
         transform.Rotate(0f, 180f, 0f);
+
+        if (_onGround)
+        {
+            DustParticle();
+
+        }
     }
 
     #endregion
@@ -436,6 +445,28 @@ public class PlayerMovement : MonoBehaviour
                 }
             }
         }
+    }
+
+    #endregion
+
+    #region ParticleEffects
+
+    private void DustParticle()
+    {
+        velocityModule = _dustParticle.velocityOverLifetime;
+
+
+        if (_facingRight)
+        {
+            velocityModule.x = -2.2f;
+        }
+        else if (!_facingRight)
+        {
+            velocityModule.x = 2.2f;
+
+        }
+
+        _dustParticle.Play();
     }
 
     #endregion

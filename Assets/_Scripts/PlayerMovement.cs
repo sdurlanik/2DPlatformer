@@ -192,7 +192,6 @@ public class PlayerMovement : MonoBehaviour
         if (_onGround)
         {
             DustParticle();
-
         }
     }
 
@@ -272,13 +271,14 @@ public class PlayerMovement : MonoBehaviour
     {
         if (!_onGround && !_onWall)
             _extraJumpsValue--;
-
         ApplyAirLinearDrag();
         _rb.velocity = new Vector2(_rb.velocity.x, 0f);
         _rb.AddForce(direction * _jumpForce, ForceMode2D.Impulse);
         _hangTimeCounter = 0f;
         _jumpBufferCounter = 0f;
         _isJumping = true;
+        EffectManager.Instance.PlayEffectSound(EffectManager.EffectState.JUMP);
+
     }
     
     // Duvar üzerindeyken zıplama (Duvarın tersi yönünde zıplandığında çalışacak)
@@ -329,6 +329,8 @@ public class PlayerMovement : MonoBehaviour
             _rb.velocity = dir.normalized * _dashSpeed;
             yield return null;
         }
+
+        EffectManager.Instance.PlayEffectSound(EffectManager.EffectState.DASH);
 
         _isDashing = false;
     }

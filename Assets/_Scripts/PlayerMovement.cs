@@ -31,7 +31,7 @@ public class PlayerMovement : MonoBehaviour
     
     [Header("Wall Collision Variables")]
     [SerializeField] private float _wallRaycastLength;
-    private bool _onWall;
+    public bool _onWall;
     private bool _onRightWall;
     
     [Header("Layer Masks")]

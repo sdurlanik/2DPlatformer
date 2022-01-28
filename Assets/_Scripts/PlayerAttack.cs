@@ -72,13 +72,13 @@ public class PlayerAttack : MonoBehaviour
     }
     void PlayerFacetoMousePos()
     {
-        if (_bulletExitPosition.angle <= 80 && _bulletExitPosition.angle >= -80 && !_playerMovementScript._facingRight)
+        if (_bulletExitPosition.angle <= 80 && _bulletExitPosition.angle >= -80 && !_playerMovementScript._facingRight && !_playerMovementScript._onWall)
         {
             transform.Rotate(0f, 180f, 0f);
             _playerMovementScript._facingRight = true;  
         }
    
-        else if (((_bulletExitPosition.angle >= 91 && _bulletExitPosition.angle <=180) || (_bulletExitPosition.angle <= -91 && _bulletExitPosition.angle >= -180 )) && _playerMovementScript._facingRight)
+        else if (((_bulletExitPosition.angle >= 91 && _bulletExitPosition.angle <=180) || (_bulletExitPosition.angle <= -91 && _bulletExitPosition.angle >= -180 )) && _playerMovementScript._facingRight &&  !_playerMovementScript._onWall)
 
         {
             print("Girdi");

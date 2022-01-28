@@ -9,6 +9,7 @@ TagManager:
   - Top
   - Obstacle
   - Apple
+  - Bullet
   layers:
   - Default
   - TransparentFX

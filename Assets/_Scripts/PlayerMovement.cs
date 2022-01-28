@@ -20,7 +20,8 @@ public class PlayerMovement : MonoBehaviour
     private float _horizontalDirection;
     private float _verticalDirection;
     private bool _changingDirection => (_rb.velocity.x > 0f && _horizontalDirection < 0f) || (_rb.velocity.x < 0f && _horizontalDirection > 0f);
-    private bool _facingRight = true;
+    public bool _facingRight = true;
+
     private bool _canMove => !_wallGrab;
     
     [Header("Ground Collision Variables")]
@@ -184,12 +185,12 @@ public class PlayerMovement : MonoBehaviour
     }
     
     //Karakterin baktığı yönü tersine çevirir;
-    void Flip()
+    public void Flip()
     {
         _facingRight = !_facingRight;
         transform.Rotate(0f, 180f, 0f);
 
-        if (_onGround)
+        if (_onGround && !_anim.GetBool("isFalling"))
         {
             DustParticle();
         }

@@ -484,11 +484,11 @@ public class PlayerMovement : MonoBehaviour
 
         if (_facingRight)
         {
-            velocityModule.x = -2.2f;
+            velocityModule.x = -2.0f;
         }
         else if (!_facingRight)
         {
-            velocityModule.x = 2.2f;
+            velocityModule.x = 2.0f;
 
         }
 

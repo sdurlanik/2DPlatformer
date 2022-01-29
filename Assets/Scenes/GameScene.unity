@@ -14145,6 +14145,8 @@ MonoBehaviour:
   _bulletPrefab: {fileID: 4014632406724778114, guid: a60f44cc9127d47d7897ab6c1e0f9758, type: 3}
   _bulletExitPoint: {fileID: 1590248118}
   _bulletShootingForce: 1000
+  _timer: 0
+  _waitingTime: 0.5
   _cursorSprite: {fileID: 803029888}
 --- !u!4 &1286551294 stripped
 Transform:

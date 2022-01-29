@@ -40,7 +40,7 @@ public class PlayerAttack : MonoBehaviour
 
         if (_timer > _waitingTime)
         {
-            if (Input.GetMouseButtonDown(0))
+            if (Input.GetMouseButtonDown(0) && !_playerMovementScript._onWall)
             {
 
                 if (_bulletExitPosition.angle <= 70 && _bulletExitPosition.angle >= -70 && _playerMovementScript._facingRight)
@@ -51,7 +51,18 @@ public class PlayerAttack : MonoBehaviour
                     Rigidbody2D tempRb = tempBullet.GetComponent<Rigidbody2D>();
             
                     tempRb.AddForce(_bulletExitPoint.transform.right * _bulletShootingForce, ForceMode2D.Force );
-                    Destroy(tempBullet, 5f);
+                    
+                    
+                    if (tempBullet != null)
+                    {
+                        Destroy(tempBullet, 5f);
+                        StartCoroutine(DeactivateCollider(tempBullet));
+                    }
+
+
+                    
+                    ShakeCamera.ShakeCam.Shake(.5f,.1f);
+                    EffectManager.Instance.PlayEffectSound(EffectManager.EffectState.ATTACK);
                 }
                 else if (((_bulletExitPosition.angle >= 110 && _bulletExitPosition.angle <=180) || (_bulletExitPosition.angle <= -110 && _bulletExitPosition.angle >= -180 )) && !_playerMovementScript._facingRight)
                 {
@@ -61,9 +72,18 @@ public class PlayerAttack : MonoBehaviour
                     Rigidbody2D tempRb = tempBullet.GetComponent<Rigidbody2D>();
             
                     tempRb.AddForce(_bulletExitPoint.transform.right * _bulletShootingForce, ForceMode2D.Force );
-                    Destroy(tempBullet, 5f);
+
+                    if (tempBullet != null)
+                    {
+                        Destroy(tempBullet, 5f);
+                        StartCoroutine(DeactivateCollider(tempBullet));
+                    }
+                   
+                    
+                    ShakeCamera.ShakeCam.Shake(.5f,.1f);
+                    EffectManager.Instance.PlayEffectSound(EffectManager.EffectState.ATTACK);
                 }
-                
+
                 _timer = 0;
             
             }
@@ -71,6 +91,13 @@ public class PlayerAttack : MonoBehaviour
             
         }
         
+    }
+
+    IEnumerator DeactivateCollider(GameObject gameObject)
+    {
+        yield return new WaitForSeconds(1f);
+
+        gameObject.tag = "Empty";
     }
 
     void CursorPos()

@@ -9,6 +9,7 @@ public class PlayerMovement : MonoBehaviour
     [Header("Components")] private Rigidbody2D _rb;
     private Animator _anim;
     [SerializeField] private ParticleSystem _dustParticle;
+    [SerializeField] private ParticleSystem _bloodParticle;
     private ParticleSystem.VelocityOverLifetimeModule velocityModule;
 
 
@@ -348,10 +349,13 @@ public class PlayerMovement : MonoBehaviour
         while (Time.time < dashStartTime + _dashLength)
         {
             _rb.velocity = dir.normalized * _dashSpeed;
+            ShakeCamera.ShakeCam.Shake(1f,.1f);
+
             yield return null;
         }
-
         EffectManager.Instance.PlayEffectSound(EffectManager.EffectState.DASH);
+
+
 
         _isDashing = false;
     }
@@ -493,6 +497,11 @@ public class PlayerMovement : MonoBehaviour
         }
 
         _dustParticle.Play();
+    }
+
+    public void BloodParticle()
+    {
+        _bloodParticle.Play();
     }
 
     #endregion

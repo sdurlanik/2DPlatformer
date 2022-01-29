@@ -18,6 +18,7 @@ public class EffectManager : MonoBehaviour
         LANDING,
         COLLECT,
         WON,
+        ATTACK,
     }
     private void Awake()
     {
@@ -57,6 +58,11 @@ public class EffectManager : MonoBehaviour
                 _effectSource.volume = 1;
                 SoundManager.Instance.PlaySound(_effectClips[4]);
                 break;
+            case EffectState.ATTACK:
+                _effectSource.volume = .5f;
+                SoundManager.Instance.PlaySound(_effectClips[5]);
+                break;
+                
         }
     }
     

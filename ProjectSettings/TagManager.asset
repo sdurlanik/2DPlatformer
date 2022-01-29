@@ -10,6 +10,7 @@ TagManager:
   - Obstacle
   - Apple
   - Bullet
+  - Empty
   layers:
   - Default
   - TransparentFX

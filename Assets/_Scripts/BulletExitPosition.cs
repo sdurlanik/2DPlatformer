@@ -6,6 +6,7 @@ using UnityEngine;
 public class BulletExitPosition : MonoBehaviour
 {
     private PlayerAttack _playerAttack;
+    private PlayerMovement _playerMovement;
     public float angle;
     private Vector3 _pos;
     private Vector3 _dir;
@@ -16,15 +17,21 @@ public class BulletExitPosition : MonoBehaviour
     private void Start()
     {
         _playerAttack = GetComponentInParent<PlayerAttack>();
+        _playerMovement = GetComponentInParent<PlayerMovement>();
     }
 
     void Update()
-    {
+    {   
         _pos = Camera.main.WorldToScreenPoint(transform.position);
          _dir= Input.mousePosition - _pos;
 
        CursorRange(_dir,_pos);
-      
+
+       if ((_playerMovement._facingRight && _dir.x <= -71) || (!_playerMovement._facingRight && _dir.x >= 71))
+       {
+           _playerAttack._cursorSprite.SetActive(false);
+       }
+       
       // print("Pozisyon " + _pos + "MousePoz " + Input.mousePosition + "Direction " + _dir);
 
         
@@ -34,13 +41,15 @@ public class BulletExitPosition : MonoBehaviour
     {
         _playerAttack._cursorSprite.SetActive(true);
      
-        if (dir.x <= 90 && dir.x >= -90)
+        if ((dir.x <= 90 && dir.x >= -90) || _playerMovement._onWall)
         {
             print("Update");
             _playerAttack._cursorSprite.SetActive(false);
             _canShoot = false;
             return;
         }
+        
+        
 
         _canShoot = true;
         if (_canShoot)

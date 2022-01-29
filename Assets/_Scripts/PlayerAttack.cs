@@ -14,6 +14,7 @@ public class PlayerAttack : MonoBehaviour
     
     private PlayerMovement _playerMovementScript;
     private BulletExitPosition _bulletExitPosition;
+ 
     void Start()
     {
         _playerMovementScript = GetComponentInParent<PlayerMovement>();
@@ -55,8 +56,9 @@ public class PlayerAttack : MonoBehaviour
                     
                     if (tempBullet != null)
                     {
-                        Destroy(tempBullet, 5f);
                         StartCoroutine(DeactivateCollider(tempBullet));
+
+                        StartCoroutine(DestroyObject(tempBullet));
                     }
 
 
@@ -75,8 +77,9 @@ public class PlayerAttack : MonoBehaviour
 
                     if (tempBullet != null)
                     {
-                        Destroy(tempBullet, 5f);
                         StartCoroutine(DeactivateCollider(tempBullet));
+
+                        StartCoroutine(DestroyObject(tempBullet));
                     }
                    
                     
@@ -93,17 +96,24 @@ public class PlayerAttack : MonoBehaviour
         
     }
 
+    IEnumerator DestroyObject(GameObject willDestroy)
+    {
+        yield return new WaitForSeconds(5);
+        
+        if(willDestroy != null) Destroy(willDestroy);
+    }
+
     IEnumerator DeactivateCollider(GameObject gameObject)
     {
         yield return new WaitForSeconds(1f);
 
-        gameObject.tag = "Empty";
+        if (gameObject != null) gameObject.tag = "Empty";
     }
 
     void CursorPos()
     {
         if (_bulletExitPosition.angle <= 70 && _bulletExitPosition.angle >= -70 && _playerMovementScript._facingRight)
-            _cursorSprite.SetActive(true);
+            _cursorSprite.SetActive(true); 
         else if (((_bulletExitPosition.angle >= 110 && _bulletExitPosition.angle <=180) || (_bulletExitPosition.angle <= -110 && _bulletExitPosition.angle >= -180 )) && !_playerMovementScript._facingRight)
             _cursorSprite.SetActive(true);
         else _cursorSprite.SetActive(false);

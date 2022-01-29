@@ -43,7 +43,6 @@ public class BulletExitPosition : MonoBehaviour
      
         if ((dir.x <= 90 && dir.x >= -90) || _playerMovement._onWall)
         {
-            print("Update");
             _playerAttack._cursorSprite.SetActive(false);
             _canShoot = false;
             return;

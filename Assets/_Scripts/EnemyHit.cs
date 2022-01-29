@@ -18,7 +18,9 @@ public class EnemyHit : MonoBehaviour
         {
             _playerMovement.BloodParticle();
             TakeDamage(20, gameObject);
+
             Destroy(other.gameObject);
+                
 
         }
     }
@@ -29,7 +31,12 @@ public class EnemyHit : MonoBehaviour
         {
             _playerMovement.BloodParticle();
             hitObject.transform.GetComponent<EnemyMovement>().enabled = false;
-            Destroy(hitObject,.5f);
+
+            if (hitObject != null)
+            {
+                Destroy(hitObject,.5f);
+
+            }
         }
 
         _currentHealt -= damage;

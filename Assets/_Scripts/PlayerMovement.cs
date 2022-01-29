@@ -6,41 +6,48 @@ public class PlayerMovement : MonoBehaviour
 {
     #region Variables
 
-    [Header("Components")]
-    private Rigidbody2D _rb;
+    [Header("Components")] private Rigidbody2D _rb;
     private Animator _anim;
     [SerializeField] private ParticleSystem _dustParticle;
     private ParticleSystem.VelocityOverLifetimeModule velocityModule;
 
-    
-    [Header("Movement Variables")]
-    [SerializeField] private float _movementAcceleration = 70f;
+
+    [Header("Movement Variables")] [SerializeField]
+    private float _movementAcceleration = 70f;
+
     [SerializeField] private float _maxMoveSpeed = 12f;
     [SerializeField] private float _groundLinearDrag = 7f;
     private float _horizontalDirection;
     private float _verticalDirection;
-    private bool _changingDirection => (_rb.velocity.x > 0f && _horizontalDirection < 0f) || (_rb.velocity.x < 0f && _horizontalDirection > 0f);
+
+    private bool _changingDirection => (_rb.velocity.x > 0f && _horizontalDirection < 0f) ||
+                                       (_rb.velocity.x < 0f && _horizontalDirection > 0f);
+
     public bool _facingRight = true;
 
     private bool _canMove => !_wallGrab;
-    
-    [Header("Ground Collision Variables")]
-    [SerializeField] private float _groundRaycastLength;
+
+    [Header("Ground Collision Variables")] [SerializeField]
+    private float _groundRaycastLength;
+
     [SerializeField] private Vector3 _groundRaycastOffset;
     private bool _onGround;
-    
-    [Header("Wall Collision Variables")]
-    [SerializeField] private float _wallRaycastLength;
+
+    [Header("Wall Collision Variables")] [SerializeField]
+    private float _wallRaycastLength;
+
     public bool _onWall;
     private bool _onRightWall;
-    
-    [Header("Layer Masks")]
-    [SerializeField] private LayerMask _groundLayer;
+
+    [Header("Layer Masks")] [SerializeField]
+    private LayerMask _groundLayer;
+
     [SerializeField] private LayerMask _wallLayer;
 
-    
-    [Header("Jump Variables")]
-    [SerializeField] private float _jumpForce = 12f;
+
+    [Header("Jump Variables")] [SerializeField]
+    private float _jumpForce = 12f;
+
     [SerializeField] private float _airLinearDrag = 2.5f;
     [SerializeField] private float _fallMultiplier = 8f;
     [SerializeField] private float _lowJumpFallMultiplier = 5f;
@@ -53,22 +60,27 @@ public class PlayerMovement : MonoBehaviour
     private float _jumpBufferCounter;
     private bool _canJump => _jumpBufferCounter > 0f && (_hangTimeCounter > 0f || _extraJumpsValue > 0 || _onWall);
     private bool _isJumping;
-    
-    [Header("Dash Variables")]
-    [SerializeField] private float _dashSpeed = 15f;
+
+    [Header("Dash Variables")] [SerializeField]
+    private float _dashSpeed = 15f;
+
     [SerializeField] private float _dashLength = .3f;
     [SerializeField] private float _dashBufferLength = .1f;
     private float _dashBufferCounter;
     private bool _isDashing;
     private bool _hasDashed;
     private bool _canDash => _dashBufferCounter > 0f && !_hasDashed;
-    
-    [Header("Wall Movement Variables")]
-    [SerializeField] private float _wallSlideModifier = 0.5f;
+
+    [Header("Wall Movement Variables")] [SerializeField]
+    private float _wallSlideModifier = 0.5f;
+
     [SerializeField] private float _wallRunModifier = 0.85f;
     [SerializeField] private float _wallJumpXVelocityHaltDelay = 0.2f;
     private bool _wallGrab => _onWall && !_onGround && Input.GetButton("WallGrab") && !_wallRun;
-    private bool _wallSlide => _onWall && !_onGround && !Input.GetButton("WallGrab") && _rb.velocity.y < 0f && !_wallRun;
+
+    private bool _wallSlide =>
+        _onWall && !_onGround && !Input.GetButton("WallGrab") && _rb.velocity.y < 0f && !_wallRun;
+
     private bool _wallRun => _onWall && _verticalDirection > 0f;
 
     #endregion
@@ -99,7 +111,10 @@ public class PlayerMovement : MonoBehaviour
         if (_canDash) StartCoroutine(Dash(_horizontalDirection, _verticalDirection));
         if (!_isDashing)
         {
-            if (_canMove) MoveCharacter();
+            if (_canMove)
+            {
+                MoveCharacter();
+            }
             else
                 // karakteri yavaşlatarak durdurur (Aniden durmasını engeller)
 
@@ -108,7 +123,7 @@ public class PlayerMovement : MonoBehaviour
             if (_onGround)
             {
                 // Yerdeyse yer sürtünmesini etkinleştirir ve zıplama koşullarını ayarlar
-            
+
                 ApplyGroundLinearDrag();
                 _extraJumpsValue = _extraJumps;
                 _hangTimeCounter = _hangTime;
@@ -119,20 +134,21 @@ public class PlayerMovement : MonoBehaviour
                 // Yerde değilse hava sürtünmesini etkinleştirir ve düşüş çarpanını ayarlar
                 ApplyAirLinearDrag();
                 FallMultiplier();
-            
+
                 // Havada kalma süresini ve zıplama koşulunu kontrol eder
                 _hangTimeCounter -= Time.fixedDeltaTime;
                 if (!_onWall || _rb.velocity.y < 0f || _wallRun) _isJumping = false;
 
             }
-        
+
             if (_canJump)
             {
                 // Yerde değilse ve duvardaysa
                 if (_onWall && !_onGround)
                 {
                     // Duvara tutunduğu halde duvara doğru zıplama gerçekleştiğinde
-                    if (!_wallRun && (_onRightWall && _horizontalDirection > 0f || !_onRightWall && _horizontalDirection < 0f))
+                    if (!_wallRun && (_onRightWall && _horizontalDirection > 0f ||
+                                      !_onRightWall && _horizontalDirection < 0f))
                     {
                         StartCoroutine(NeutralWallJump());
                     }
@@ -140,6 +156,7 @@ public class PlayerMovement : MonoBehaviour
                     {
                         WallJump();
                     }
+
                     Flip();
                 }
                 // Yerdeyse ve duvara değmiyorsa
@@ -148,6 +165,7 @@ public class PlayerMovement : MonoBehaviour
                     Jump(Vector2.up);
                 }
             }
+
             if (!_isJumping)
             {
                 if (_wallSlide) WallSlide();
@@ -160,46 +178,47 @@ public class PlayerMovement : MonoBehaviour
     }
 
     #endregion
-    
+
     #region Movement
 
     private Vector2 GetInput()
     {
         // Klavye girdilerini alır WASD değerleri -1 ile 1 arasında Vector2 değer döndürür
-        
+
         return new Vector2(Input.GetAxisRaw("Horizontal"), Input.GetAxisRaw("Vertical"));
     }
-    
+
     // Karakter hareketi
-    
+
     private void MoveCharacter()
     {
         // Karaktere belirtilen yön ve hızlanma girdisi ile güç uygular 
-        
+
         _rb.AddForce(new Vector2(_horizontalDirection, 0f) * _movementAcceleration);
         
-        // Karakterin hızını maxMoveSpeed ile sınırlar
         
+
+        // Karakterin hızını maxMoveSpeed ile sınırlar
+
         if (Mathf.Abs(_rb.velocity.x) > _maxMoveSpeed)
             _rb.velocity = new Vector2(Mathf.Sign(_rb.velocity.x) * _maxMoveSpeed, _rb.velocity.y);
+        
+        
     }
-    
+
     //Karakterin baktığı yönü tersine çevirir;
     public void Flip()
     {
         _facingRight = !_facingRight;
         transform.Rotate(0f, 180f, 0f);
 
-        if (_onGround && !_anim.GetBool("isFalling"))
-        {
-            DustParticle();
-        }
+       
     }
 
     #endregion
 
     #region Drag & Gravity
-    
+
     // Zemin sürtünmesini ayarlar
     private void ApplyGroundLinearDrag()
     {
@@ -212,13 +231,13 @@ public class PlayerMovement : MonoBehaviour
             _rb.drag = 0f;
         }
     }
-    
+
     // Hava sürtünmesini ayarlar
     private void ApplyAirLinearDrag()
     {
         _rb.drag = _airLinearDrag;
     }
-    
+
     // Düşüş çarpanını ayarlar (Yerçekimini havada olma koşuluna göre değiştir)
     private void FallMultiplier()
     {
@@ -242,9 +261,9 @@ public class PlayerMovement : MonoBehaviour
             }
         }
     }
-    
+
     #endregion
-    
+
     #region Collisions
 
     private void CheckCollisions()
@@ -263,8 +282,9 @@ public class PlayerMovement : MonoBehaviour
         _onRightWall = Physics2D.Raycast(position, Vector2.right, _wallRaycastLength, _wallLayer);
 
     }
+
     #endregion
-    
+
     #region Jump
 
     // Zıplama
@@ -281,7 +301,7 @@ public class PlayerMovement : MonoBehaviour
         EffectManager.Instance.PlayEffectSound(EffectManager.EffectState.JUMP);
 
     }
-    
+
     // Duvar üzerindeyken zıplama (Duvarın tersi yönünde zıplandığında çalışacak)
     private void WallJump()
     {
@@ -299,7 +319,7 @@ public class PlayerMovement : MonoBehaviour
     }
 
     #endregion
-   
+
     #region Dash
 
     //Dash atma 
@@ -316,7 +336,7 @@ public class PlayerMovement : MonoBehaviour
 
         // Hareket ediyorsa o yöne doğru dash atar
         Vector2 dir;
-        if (x != 0f || y != 0f) dir = new Vector2(x,y);
+        if (x != 0f || y != 0f) dir = new Vector2(x, y);
         else
         {
             //Hareket etmiyorsa yüzü ne tarafa bakıyorsa o yöne dash atar
@@ -336,8 +356,8 @@ public class PlayerMovement : MonoBehaviour
         _isDashing = false;
     }
 
-        #endregion
-  
+    #endregion
+
     #region Wall
 
     // Duvara tutunma
@@ -371,7 +391,7 @@ public class PlayerMovement : MonoBehaviour
             _rb.velocity = new Vector2(-1f, _rb.velocity.y);
         }
 
-        
+
         if (_onRightWall && !_facingRight)
         {
             Flip();
@@ -402,10 +422,12 @@ public class PlayerMovement : MonoBehaviour
         {
             _anim.SetBool("isDashing", false);
 
-            if ((_horizontalDirection < 0f && _facingRight || _horizontalDirection > 0f && !_facingRight) && !_wallGrab && !_wallSlide)
+            if ((_horizontalDirection < 0f && _facingRight || _horizontalDirection > 0f && !_facingRight) &&
+                !_wallGrab && !_wallSlide)
             {
                 Flip();
             }
+
             if (_onGround)
             {
                 _anim.SetBool("isGrounded", true);
@@ -417,6 +439,7 @@ public class PlayerMovement : MonoBehaviour
             {
                 _anim.SetBool("isGrounded", false);
             }
+
             if (_isJumping)
             {
                 _anim.SetBool("isJumping", true);
@@ -440,6 +463,7 @@ public class PlayerMovement : MonoBehaviour
                     _anim.SetBool("WallGrab", false);
                     _anim.SetFloat("verticalDirection", 0f);
                 }
+
                 if (_wallRun)
                 {
                     _anim.SetBool("isFalling", false);
@@ -454,10 +478,9 @@ public class PlayerMovement : MonoBehaviour
 
     #region ParticleEffects
 
-    private void DustParticle()
+    public void DustParticle()
     {
         velocityModule = _dustParticle.velocityOverLifetime;
-
 
         if (_facingRight)
         {

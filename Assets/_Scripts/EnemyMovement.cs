@@ -5,16 +5,21 @@ using UnityEngine;
 
 public class EnemyMovement : MonoBehaviour
 {
+    
     [SerializeField] private Transform[] _waypoints;
     [SerializeField] private float _speed;
     private int _currentWaypoint = 0;
     private float _rotationSpeed;
     private float _waypointRadius = 1;
-    private Animator enemyAnimator;
+    private Animator _enemyAnimator;
+    private GameObject _enemyUI;
+
 
     private void Start()
     {
-        enemyAnimator = GetComponent<Animator>();
+        _enemyAnimator = GetComponent<Animator>();
+        _enemyUI = transform.GetChild(0).gameObject;
+
     }
 
     void Update()
@@ -49,7 +54,7 @@ public class EnemyMovement : MonoBehaviour
             _speed * Time.deltaTime);
 
         transform.position = new Vector2(temp.x, transform.position.y);
-        enemyAnimator.SetBool("isWalking", true);
+        _enemyAnimator.SetBool("isWalking", true);
     }
 
     
@@ -57,5 +62,6 @@ public class EnemyMovement : MonoBehaviour
     private void Flip()
     {
         transform.Rotate(0f, 180f, 0f);
+        _enemyUI.transform.Rotate(0,180,0);
     }
 }

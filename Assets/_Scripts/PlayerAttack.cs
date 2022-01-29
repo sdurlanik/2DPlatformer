@@ -23,7 +23,6 @@ public class PlayerAttack : MonoBehaviour
     {
 
         CursorPos();
-        ShootBullet();
 
     }
 
@@ -33,7 +32,7 @@ public class PlayerAttack : MonoBehaviour
 
     }
 
-    void ShootBullet()
+    public void ShootBullet()
     {
         if (Input.GetMouseButtonDown(0))
         {

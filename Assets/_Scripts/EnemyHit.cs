@@ -35,7 +35,7 @@ public class EnemyHit : MonoBehaviour
             if (hitObject != null)
             {
                 Destroy(hitObject,.5f);
-
+                
             }
         }
 

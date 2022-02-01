@@ -11,6 +11,9 @@ TagManager:
   - Apple
   - Bullet
   - Empty
+  - Trap
+  - FallTrigger
+  - Checkpoint
   layers:
   - Default
   - TransparentFX

@@ -46,5 +46,5 @@ public class PlayerCollisions : MonoBehaviour
             PlayerHealthScript.TakeDamage(1);
         }
     }
-    
+
 }

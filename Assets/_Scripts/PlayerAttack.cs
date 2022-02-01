@@ -129,7 +129,6 @@ public class PlayerAttack : MonoBehaviour
         else if (((_bulletExitPosition.angle >= 91 && _bulletExitPosition.angle <=180) || (_bulletExitPosition.angle <= -91 && _bulletExitPosition.angle >= -180 )) && _playerMovementScript._facingRight &&  !_playerMovementScript._onWall)
 
         {
-            print("Girdi");
             transform.Rotate(0f, 180f, 0f);
             _playerMovementScript._facingRight = false;
         }

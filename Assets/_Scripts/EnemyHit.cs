@@ -9,8 +9,8 @@ public class EnemyHit : MonoBehaviour
 {
     [SerializeField] private Image _healthSprite;
     [SerializeField] private PlayerMovement _playerMovement;
-    private float _maxHealth = 100;
-    private float _currentHealt = 100;
+    private float _maxHealth = 90;
+    private float _currentHealt = 90;
     
     private void OnTriggerEnter2D(Collider2D other)
     {
@@ -27,19 +27,18 @@ public class EnemyHit : MonoBehaviour
 
     void TakeDamage(int damage, GameObject hitObject)
     {
+       
+
+        _currentHealt -= damage;
+        _healthSprite.fillAmount = _currentHealt / _maxHealth;
+        
         if (_currentHealt <= 0)
         {
             _playerMovement.BloodParticle();
             hitObject.transform.GetComponent<EnemyMovement>().enabled = false;
+            Destroy(hitObject, .5f);
 
-            if (hitObject != null)
-            {
-                Destroy(hitObject,.5f);
-                
-            }
         }
-
-        _currentHealt -= damage;
-        _healthSprite.fillAmount = _currentHealt / _maxHealth;
+        
     }
 }

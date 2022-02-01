@@ -14,6 +14,7 @@ public class PlayerCollisions : MonoBehaviour
         _checkPoint = transform;
     }
 
+
     private void OnTriggerEnter2D(Collider2D other)
     {
         if (other.gameObject.CompareTag("Apple"))
@@ -38,8 +39,11 @@ public class PlayerCollisions : MonoBehaviour
         {
             transform.position = _checkPoint.position;
             PlayerHealthScript.TakeDamage(1);
+        }
 
-            
+        if (other.gameObject.CompareTag("Enemy"))
+        {
+            PlayerHealthScript.TakeDamage(1);
         }
     }
     

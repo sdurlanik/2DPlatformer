@@ -14,6 +14,7 @@ TagManager:
   - Trap
   - FallTrigger
   - Checkpoint
+  - Enemy
   layers:
   - Default
   - TransparentFX

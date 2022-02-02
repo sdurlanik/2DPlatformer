@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.EventSystems;
 
 public class BulletExitPosition : MonoBehaviour
 {
@@ -28,8 +29,12 @@ public class BulletExitPosition : MonoBehaviour
         _pos = Camera.main.WorldToScreenPoint(transform.position);
         _dir= Input.mousePosition - _pos;
 
-       CursorRange(_dir,_pos);
-       CursorHide();
+        if (!EventSystem.current.IsPointerOverGameObject())
+        {
+            CursorRange(_dir,_pos);
+            CursorHide();  
+        }
+         
 
 
     }

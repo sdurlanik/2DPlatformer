@@ -32,7 +32,6 @@ public class PlayerAttack : MonoBehaviour
     private void FixedUpdate()
     {
         PlayerFacetoMousePos();
-
     }
 
     public void ShootBullet()

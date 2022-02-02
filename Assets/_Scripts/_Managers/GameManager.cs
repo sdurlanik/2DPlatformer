@@ -12,6 +12,7 @@ public class GameManager : MonoBehaviour
    [SerializeField] private TextMeshProUGUI _appleText;
    [SerializeField] private TextMeshProUGUI _bananaText;
    [SerializeField] private GameObject _shopPanel;
+   [SerializeField] private GameObject _shopExitPanel;
 
 
    private int _appleCount = 0;
@@ -77,6 +78,16 @@ public class GameManager : MonoBehaviour
       _appleCount++;
       _appleText.text = "X" + _appleCount.ToString();
    }
+   private void ShortCuts()
+   {
+      if (Input.GetKeyDown(KeyCode.M))
+      {
+         _isMarketOpen = !_isMarketOpen;
+         _shopPanel.SetActive(_isMarketOpen);
+         _shopExitPanel.SetActive(_isMarketOpen);
+         ChangeState(GameStates.PAUSE);
+      }
+   }
 
 
    #region ButtonClickFuncs
@@ -99,18 +110,20 @@ public class GameManager : MonoBehaviour
    {
       _isMarketOpen = !_isMarketOpen;
       _shopPanel.SetActive(_isMarketOpen);
+      _shopExitPanel.SetActive(_isMarketOpen);
       ChangeState(GameStates.PAUSE);
    }
 
-   private void ShortCuts()
+   public void OnMarketExitButtonClick(GameObject exitButton)
    {
-      if (Input.GetKeyDown(KeyCode.M))
-      {
-         _isMarketOpen = !_isMarketOpen;
-         _shopPanel.SetActive(_isMarketOpen);
-         ChangeState(GameStates.PAUSE);
-      }
+      _isMarketOpen = !_isMarketOpen;
+      _shopPanel.SetActive(_isMarketOpen);
+      exitButton.SetActive(_isMarketOpen);
+      ChangeState(GameStates.PAUSE);
+
    }
+
+
 
    #endregion
 

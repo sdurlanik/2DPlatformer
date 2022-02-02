@@ -12,6 +12,7 @@ public class BulletExitPosition : MonoBehaviour
     private Vector3 _dir;
 
     private bool _canShoot;
+    private int _bananaCount;
     
 
     private void Start()
@@ -22,21 +23,24 @@ public class BulletExitPosition : MonoBehaviour
 
     void Update()
     {   
+        _bananaCount = GameManager.Instance.BananaCount;
+
         _pos = Camera.main.WorldToScreenPoint(transform.position);
-         _dir= Input.mousePosition - _pos;
+        _dir= Input.mousePosition - _pos;
 
        CursorRange(_dir,_pos);
+       CursorHide();
 
-       if ((_playerMovement._facingRight && _dir.x <= -71) || (!_playerMovement._facingRight && _dir.x >= 71))
-       {
-           _playerAttack._cursorSprite.SetActive(false);
-       }
-       
-      // print("Pozisyon " + _pos + "MousePoz " + Input.mousePosition + "Direction " + _dir);
 
-        
     }
 
+    void CursorHide()
+    {
+        if ((_playerMovement._facingRight && _dir.x <= -71) || (!_playerMovement._facingRight && _dir.x >= 71))
+        {
+            _playerAttack._cursorSprite.SetActive(false);
+        }
+    }
     void CursorRange(Vector3 dir, Vector3 pos)
     {
         _playerAttack._cursorSprite.SetActive(true);
@@ -47,14 +51,13 @@ public class BulletExitPosition : MonoBehaviour
             _canShoot = false;
             return;
         }
-        
-        
-
         _canShoot = true;
+        
         if (_canShoot)
         {
-            _playerAttack.ShootBullet();
+            if (_bananaCount > 0) _playerAttack.ShootBullet();
 
+            
         }
         
         angle = Mathf.Atan2(dir.y, dir.x) * Mathf.Rad2Deg;

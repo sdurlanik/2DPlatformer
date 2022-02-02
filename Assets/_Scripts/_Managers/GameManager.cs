@@ -17,6 +17,18 @@ public class GameManager : MonoBehaviour
    private int _appleCount = 0;
    private int _bananaCount = 0;
 
+   public int BananaCount
+   {
+      get { return _bananaCount; }
+      set { _bananaCount = value; }
+   }
+
+   public TextMeshProUGUI BananaText
+   {
+      get {return _bananaText;}
+      set { _bananaText = value; }
+   }
+
    private bool _isMarketOpen; 
    public enum GameStates
    {

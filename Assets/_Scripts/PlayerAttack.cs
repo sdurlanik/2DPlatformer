@@ -50,21 +50,19 @@ public class PlayerAttack : MonoBehaviour
                         _bulletExitPoint.transform.rotation);
 
                     Rigidbody2D tempRb = tempBullet.GetComponent<Rigidbody2D>();
-            
                     tempRb.AddForce(_bulletExitPoint.transform.right * _bulletShootingForce, ForceMode2D.Force );
-                    
-                    
+
                     if (tempBullet != null)
                     {
                         StartCoroutine(DeactivateCollider(tempBullet));
-
                         StartCoroutine(DestroyObject(tempBullet));
                     }
 
-
-                    
                     ShakeCamera.ShakeCam.Shake(.5f,.1f);
                     EffectManager.Instance.PlayEffectSound(EffectManager.EffectState.ATTACK);
+                    
+                    GameManager.Instance.BananaCount--;
+                    GameManager.Instance.BananaText.text = "X" + GameManager.Instance.BananaCount;
                 }
                 else if (((_bulletExitPosition.angle >= 110 && _bulletExitPosition.angle <=180) || (_bulletExitPosition.angle <= -110 && _bulletExitPosition.angle >= -180 )) && !_playerMovementScript._facingRight)
                 {
@@ -72,19 +70,19 @@ public class PlayerAttack : MonoBehaviour
                         _bulletExitPoint.transform.rotation);
 
                     Rigidbody2D tempRb = tempBullet.GetComponent<Rigidbody2D>();
-            
                     tempRb.AddForce(_bulletExitPoint.transform.right * _bulletShootingForce, ForceMode2D.Force );
 
                     if (tempBullet != null)
                     {
                         StartCoroutine(DeactivateCollider(tempBullet));
-
                         StartCoroutine(DestroyObject(tempBullet));
                     }
-                   
                     
                     ShakeCamera.ShakeCam.Shake(.5f,.1f);
                     EffectManager.Instance.PlayEffectSound(EffectManager.EffectState.ATTACK);
+                    
+                    GameManager.Instance.BananaCount--;
+                    GameManager.Instance.BananaText.text = "X" + GameManager.Instance.BananaCount;
                 }
 
                 _timer = 0;

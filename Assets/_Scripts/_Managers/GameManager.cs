@@ -102,6 +102,8 @@ public class GameManager : MonoBehaviour
          
          _appleText.text = "X" + _appleCount.ToString();
          _bananaText.text = "X" + _bananaCount.ToString();
+         
+         Ability.instance.CanShoot = true;
       }
       
    }

@@ -53,7 +53,7 @@ public class PlayerMovement : MonoBehaviour
     [SerializeField] private float _fallMultiplier = 8f;
     [SerializeField] private float _lowJumpFallMultiplier = 5f;
     [SerializeField] private float _downMultiplier = 12f;
-    [SerializeField] private int _extraJumps = 1;
+    private int _extraJumps;
     [SerializeField] private float _hangTime = .1f;
     [SerializeField] private float _jumpBufferLength = .1f;
     private int _extraJumpsValue;
@@ -92,6 +92,7 @@ public class PlayerMovement : MonoBehaviour
     {
         _rb = GetComponent<Rigidbody2D>();
         _anim = GetComponent<Animator>();
+        _extraJumps = Ability.instance.ExtraJumps;
     }
 
     private void Update()
@@ -169,10 +170,14 @@ public class PlayerMovement : MonoBehaviour
 
             if (!_isJumping)
             {
-                if (_wallSlide) WallSlide();
-                if (_wallGrab) WallGrab();
-                if (_wallRun) WallRun();
-                if (_onWall) StickToWall();
+                if (Ability.instance.WallMovement)
+                {
+                    if (_wallSlide) WallSlide();
+                    if (_wallGrab) WallGrab();
+                    if (_wallRun) WallRun();
+                    if (_onWall) StickToWall();
+                }
+               
             }
         }
 
@@ -326,38 +331,43 @@ public class PlayerMovement : MonoBehaviour
     //Dash atma 
     IEnumerator Dash(float x, float y)
     {
-        float dashStartTime = Time.time;
-        _hasDashed = true;
-        _isDashing = true;
-        _isJumping = false;
-
-        _rb.velocity = Vector2.zero;
-        _rb.gravityScale = 0f;
-        _rb.drag = 0f;
-
-        // Hareket ediyorsa o yöne doğru dash atar
-        Vector2 dir;
-        if (x != 0f || y != 0f) dir = new Vector2(x, y);
-        else
+        if (Ability.instance.CanDash)
         {
-            //Hareket etmiyorsa yüzü ne tarafa bakıyorsa o yöne dash atar
-            if (_facingRight) dir = new Vector2(1f, 0f);
-            else dir = new Vector2(-1f, 0f);
+            float dashStartTime = Time.time;
+            _hasDashed = true;
+            _isDashing = true;
+            _isJumping = false;
+
+            _rb.velocity = Vector2.zero;
+            _rb.gravityScale = 0f;
+            _rb.drag = 0f;
+
+            // Hareket ediyorsa o yöne doğru dash atar
+            Vector2 dir;
+            if (x != 0f || y != 0f) dir = new Vector2(x, y);
+            else
+            {
+                //Hareket etmiyorsa yüzü ne tarafa bakıyorsa o yöne dash atar
+                if (_facingRight) dir = new Vector2(1f, 0f);
+                else dir = new Vector2(-1f, 0f);
+            }
+
+            // dashStartTime süresince karakterin hızını input verisi yönünde arttırır
+            while (Time.time < dashStartTime + _dashLength)
+            {
+                _rb.velocity = dir.normalized * _dashSpeed;
+                ShakeCamera.ShakeCam.Shake(1f,.1f);
+
+                yield return null;
+            }
+            EffectManager.Instance.PlayEffectSound(EffectManager.EffectState.DASH);
+
+
+
+            _isDashing = false; 
         }
-
-        // dashStartTime süresince karakterin hızını input verisi yönünde arttırır
-        while (Time.time < dashStartTime + _dashLength)
-        {
-            _rb.velocity = dir.normalized * _dashSpeed;
-            ShakeCamera.ShakeCam.Shake(1f,.1f);
-
-            yield return null;
-        }
-        EffectManager.Instance.PlayEffectSound(EffectManager.EffectState.DASH);
-
-
-
-        _isDashing = false;
+        
+          
     }
 
     #endregion

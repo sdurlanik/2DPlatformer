@@ -23,19 +23,25 @@ public class BulletExitPosition : MonoBehaviour
     }
 
     void Update()
-    {   
+    {
         _bananaCount = GameManager.Instance.BananaCount;
 
         _pos = Camera.main.WorldToScreenPoint(transform.position);
         _dir= Input.mousePosition - _pos;
 
+      
+        
         if (!EventSystem.current.IsPointerOverGameObject())
         {
             CursorRange(_dir,_pos);
-            CursorHide();  
         }
-         
+        CursorHide();
+        
+    }
 
+    private void LateUpdate()
+    {
+        _playerAttack._cursorSprite.SetActive(Ability.instance.CanShoot);
 
     }
 
@@ -45,10 +51,11 @@ public class BulletExitPosition : MonoBehaviour
         {
             _playerAttack._cursorSprite.SetActive(false);
         }
+        
     }
     void CursorRange(Vector3 dir, Vector3 pos)
     {
-        _playerAttack._cursorSprite.SetActive(true);
+         _playerAttack._cursorSprite.SetActive(true);
      
         if ((dir.x <= 90 && dir.x >= -90) || _playerMovement._onWall)
         {
@@ -58,9 +65,17 @@ public class BulletExitPosition : MonoBehaviour
         }
         _canShoot = true;
         
-        if (_canShoot)
+        if (_canShoot && Ability.instance.CanShoot)
         {
-            if (_bananaCount > 0) _playerAttack.ShootBullet();
+            if (_bananaCount > 0)
+            {
+                _playerAttack.ShootBullet();
+            }
+            else
+            {
+                Ability.instance.CanShoot = false;
+            }
+         
 
             
         }

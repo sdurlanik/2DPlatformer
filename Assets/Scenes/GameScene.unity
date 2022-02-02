@@ -48353,6 +48353,7 @@ GameObject:
   - component: {fileID: 1281296600}
   - component: {fileID: 1281296597}
   - component: {fileID: 1281296601}
+  - component: {fileID: 1281296605}
   m_Layer: 0
   m_Name: Player
   m_TagString: Player
@@ -48414,7 +48415,6 @@ MonoBehaviour:
   _fallMultiplier: 7
   _lowJumpFallMultiplier: 5
   _downMultiplier: 12
-  _extraJumps: 1
   _hangTime: 0.1
   _jumpBufferLength: 0.1
   _dashSpeed: 15
@@ -48600,6 +48600,22 @@ MonoBehaviour:
   - {fileID: 121495000}
   - {fileID: 1535706755}
   - {fileID: 629671096}
+--- !u!114 &1281296605
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1281296594}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 55ec3707075eb46b28a81dc3e8a81cba, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _canDash: 1
+  _wallMovement: 1
+  _canShoot: 0
+  _extraJumps: 1
 --- !u!1 &1284516000
 GameObject:
   m_ObjectHideFlags: 0

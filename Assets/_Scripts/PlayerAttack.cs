@@ -22,11 +22,9 @@ public class PlayerAttack : MonoBehaviour
     }
 
 
-    private void Update()
+    private void LateUpdate()
     {
-
         CursorPos();
-
     }
 
     private void FixedUpdate()
@@ -110,10 +108,13 @@ public class PlayerAttack : MonoBehaviour
     void CursorPos()
     {
         if (_bulletExitPosition.angle <= 70 && _bulletExitPosition.angle >= -70 && _playerMovementScript._facingRight)
-            _cursorSprite.SetActive(true); 
+                _cursorSprite.SetActive(true); 
         else if (((_bulletExitPosition.angle >= 110 && _bulletExitPosition.angle <=180) || (_bulletExitPosition.angle <= -110 && _bulletExitPosition.angle >= -180 )) && !_playerMovementScript._facingRight)
-            _cursorSprite.SetActive(true);
+                _cursorSprite.SetActive(true);
+        
         else _cursorSprite.SetActive(false);
+        
+        
     }
     void PlayerFacetoMousePos()
     {

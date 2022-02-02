@@ -22,6 +22,8 @@ public class PlayerCollisions : MonoBehaviour
             Animator otherAnim = other.gameObject.GetComponent<Animator>();
             otherAnim.SetBool("isCollected", true);
             EffectManager.Instance.PlayEffectSound(EffectManager.EffectState.COLLECT);
+            
+            GameManager.Instance.AppleUiCount();
         }
 
         if (other.gameObject.CompareTag("Trap"))

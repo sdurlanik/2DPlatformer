@@ -7,15 +7,23 @@ using UnityEngine.UI;
 
 public class EnemyHit : MonoBehaviour
 {
-    [SerializeField] private Image _healthSprite;
+    [SerializeField] private GameObject _enemyUi;
+    private Image _healthSprite;
     [SerializeField] private PlayerMovement _playerMovement;
     private float _maxHealth = 90;
     private float _currentHealt = 90;
-    
+
+    private void Start()
+    {
+        _healthSprite = _enemyUi.transform.GetChild(0).GetChild(1).GetComponent<Image>();
+
+    }
+
     private void OnTriggerEnter2D(Collider2D other)
     {
         if (other.gameObject.CompareTag("Bullet"))
         {
+            _enemyUi.SetActive(true);
             _playerMovement.BloodParticle();
             TakeDamage(20, gameObject);
 
@@ -36,6 +44,7 @@ public class EnemyHit : MonoBehaviour
         {
             _playerMovement.BloodParticle();
             hitObject.transform.GetComponent<EnemyMovement>().enabled = false;
+            _enemyUi.SetActive(false);
             Destroy(hitObject, .5f);
 
         }

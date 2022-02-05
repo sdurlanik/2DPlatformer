@@ -15,6 +15,7 @@ TagManager:
   - FallTrigger
   - Checkpoint
   - Enemy
+  - Dialogue
   layers:
   - Default
   - TransparentFX

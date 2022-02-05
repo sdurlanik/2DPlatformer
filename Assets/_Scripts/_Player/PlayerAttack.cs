@@ -63,7 +63,7 @@ public class PlayerAttack : MonoBehaviour
                     GameManager.Instance.BananaCount--;
                     GameManager.Instance.BananaText.text = "X" + GameManager.Instance.BananaCount;
                 }
-                else if (((_bulletExitPosition.angle >= 110 && _bulletExitPosition.angle <=180) || (_bulletExitPosition.angle <= -110 && _bulletExitPosition.angle >= -180 )) && _playerMovementScript._facingRight)
+                else if (((_bulletExitPosition.angle >= 110 && _bulletExitPosition.angle <=180) || (_bulletExitPosition.angle <= -110 && _bulletExitPosition.angle >= -180 )) && !_playerMovementScript._facingRight)
                 {
                     GameObject tempBullet = Instantiate(_bulletPrefab, _bulletExitPoint.transform.position,
                         _bulletExitPoint.transform.rotation);

@@ -14,6 +14,8 @@ public class PlayerAttack : MonoBehaviour
     
     private PlayerMovement _playerMovementScript;
     private BulletExitPosition _bulletExitPosition;
+
+
  
     void Start()
     {
@@ -22,9 +24,9 @@ public class PlayerAttack : MonoBehaviour
     }
 
 
-    private void LateUpdate()
+    private void Update()
     {
-        CursorPos();
+       // CursorPos();
     }
 
     private void FixedUpdate()
@@ -61,7 +63,7 @@ public class PlayerAttack : MonoBehaviour
                     GameManager.Instance.BananaCount--;
                     GameManager.Instance.BananaText.text = "X" + GameManager.Instance.BananaCount;
                 }
-                else if (((_bulletExitPosition.angle >= 110 && _bulletExitPosition.angle <=180) || (_bulletExitPosition.angle <= -110 && _bulletExitPosition.angle >= -180 )) && !_playerMovementScript._facingRight)
+                else if (((_bulletExitPosition.angle >= 110 && _bulletExitPosition.angle <=180) || (_bulletExitPosition.angle <= -110 && _bulletExitPosition.angle >= -180 )) && _playerMovementScript._facingRight)
                 {
                     GameObject tempBullet = Instantiate(_bulletPrefab, _bulletExitPoint.transform.position,
                         _bulletExitPoint.transform.rotation);
@@ -105,14 +107,20 @@ public class PlayerAttack : MonoBehaviour
         if (gameObject != null) gameObject.tag = "Empty";
     }
 
-    void CursorPos()
+   public void CursorPos()
     {
+        
+        
         if (_bulletExitPosition.angle <= 70 && _bulletExitPosition.angle >= -70 && _playerMovementScript._facingRight)
                 _cursorSprite.SetActive(true); 
         else if (((_bulletExitPosition.angle >= 110 && _bulletExitPosition.angle <=180) || (_bulletExitPosition.angle <= -110 && _bulletExitPosition.angle >= -180 )) && !_playerMovementScript._facingRight)
                 _cursorSprite.SetActive(true);
         
         else _cursorSprite.SetActive(false);
+
+       
+
+       
         
         
     }
